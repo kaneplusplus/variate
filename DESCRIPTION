@@ -1,0 +1,19 @@
+Package: bivariate
+Title: Explore Bivariate Relationships Among Data
+Version: 0.0.1
+Authors@R: c(
+  person(given = "Michael J.",
+           family = "Kane",
+           email = "michael.kane@yale.edu",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "http://orcid.org/0000-0003-1899-6662")))
+Description: What the package does (one paragraph).
+License: Apache License (>= 2)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Suggests: 
+  forceps,
+  testthat (>= 3.0.0)
+Config/testthat/edition: 3
