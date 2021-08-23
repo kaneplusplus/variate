@@ -87,3 +87,6 @@ v_barstats <- function(d, x_term, y_term, by) {
   }
 }
 
+v_survplot <- function(d, x_term, y_term, by) {
+  browser()
+}

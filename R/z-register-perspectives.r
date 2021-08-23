@@ -27,6 +27,12 @@ register_perspective(
 
 register_perspective(
   y_type = "numeric",
+  x_type = "numeric",
+  fun = v_scatter
+)
+
+register_perspective(
+  y_type = "numeric",
   x_type = "factor",
   by_type = "factor",
   fun = v_between_x_fac_y_num 
@@ -58,9 +64,28 @@ register_perspective(
 )
 
 register_perspective(
-  y_type = "factor",
+  y_type = "survival",
   x_type = "factor",
   by_type = "factor",
-  fun = v_barstats
+  fun = v_survplot
+)
+
+register_perspective(
+  y_type = "survival",
+  x_type = "factor",
+  fun = v_survplot
+)
+
+register_perspective(
+  y_type = "survival",
+  x_type = "numeric",
+  by_type = "factor",
+  fun = v_survplot
+)
+
+register_perspective(
+  y_type = "survival",
+  x_type = "numeric",
+  fun = v_survplot
 )
 

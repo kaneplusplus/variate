@@ -64,17 +64,17 @@ roles(x)
 
 x <- add_roles(x, roles(x))
 
-x %>% 
+ps <- x %>% 
   select_role("baseline") %>%
   select_if( ~ inherits(., "factor") ) %>%
   tbl_summary(missing = "always", missing_text = "NA")
 
-x %>% 
+ps <- x %>% 
   select_if( ~ class(.)[1] == "factor") %>%
   perspective( ~ baseline)
 
 # arm variable
-x %>% 
+ps <- x %>% 
   select_if( ~ class(.)[1] == "factor") %>%
   perspective( ~ baseline | arm)
 
