@@ -1,4 +1,4 @@
-Package: bivariate
+Package: variate
 Title: Explore Bivariate Relationships Among Data
 Version: 0.0.1
 Authors@R: c(

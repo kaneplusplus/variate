@@ -3,6 +3,7 @@ document("~/projects/forceps")
 document()
 
 library(dplyr)
+library(gtsummary)
 
 data(lc_adsl, lc_biomarkers, lc_adverse_events, lc_demography)
 
@@ -45,26 +46,45 @@ roles <- list(
   endpoints = c(
     "best_response",
     "chemo_stop",
-    "Surv(pds_days, pfs_censor)",
+    "Surv(pfs_days, pfs_censor)",
     "Surv(os_days, os_censor)"
-  )
+  ),
+  arm = "arm"
 )
 
 x <- data_list %>%
   consolidate(on = "usubjid") %>%
   add_roles(roles)
 
+document("~/projects/forceps")
+x %>% 
+  select_role("baseline") 
+
 roles(x)
 
+x <- add_roles(x, roles(x))
+
 x %>% 
-  select_if( ~ class(.)[1] == "factor") %>%
-  role_filter("baseline") %>%
+  select_role("baseline") %>%
+  select_if( ~ inherits(., "factor") ) %>%
   tbl_summary(missing = "always", missing_text = "NA")
 
-document("~/projects/forceps")
-document()
 x %>% 
   select_if( ~ class(.)[1] == "factor") %>%
-  bv_render( ~ baseline)
+  perspective( ~ baseline)
 
+# arm variable
+x %>% 
+  select_if( ~ class(.)[1] == "factor") %>%
+  perspective( ~ baseline | arm)
 
+ps <- x %>% 
+  perspective( adverse_event ~ baseline | arm)
+
+# arm role
+ps <- x %>%
+  perspective( endpoints ~ arm ) 
+
+ps <- x %>%
+  perspective( endpoints ~ arm )
+ 
