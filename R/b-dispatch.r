@@ -11,11 +11,15 @@ perspective_map_lookup <-
   if (y_integer_as_numeric) {
     if (y_type == "integer") {
       y_type <- "numeric"
+    } else if (y_type == "character") {
+      y_type <- "factor"
     }
   }
   if (x_integer_as_numeric) {
     if (x_type == "integer") {
       x_type <- "numeric"
+    } else if (x_type == "character") {
+      x_type <- "factor"
     }
   }
 
@@ -84,7 +88,7 @@ register_perspective <-
 #' @importFrom checkmate check_data_frame check_formula
 #' @importFrom dplyr select bind_rows bind_cols mutate
 #' @importFrom tibble tibble
-#' @importFrom purrr pmap
+#' @importFrom purrr pmap map map_lgl
 #' @export
 perspective <- function(x, form) {
 
@@ -117,7 +121,7 @@ perspective <- function(x, form) {
       rename(y_term = term, y_type = type)
 
     ll <- 
-      purrr::map(
+      map(
         y_roles$y_term, 
         ~ get_variable_names(parse(text = .x)[[1]])
       )

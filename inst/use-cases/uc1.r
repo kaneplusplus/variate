@@ -4,6 +4,7 @@ document()
 
 library(dplyr)
 library(gtsummary)
+library(trelliscopejs)
 
 data(lc_adsl, lc_biomarkers, lc_adverse_events, lc_demography)
 
@@ -75,16 +76,72 @@ ps <- x %>%
 
 # arm variable
 ps <- x %>% 
-  select_if( ~ class(.)[1] == "factor") %>%
+  select_if( ~ inherits(., "factor") ) %>%
   perspective( ~ baseline | arm)
 
 ps <- x %>% 
-  perspective( adverse_event ~ baseline | arm)
+  perspective( adverse_event ~ baseline | arm )
+
+
+ps %>%
+  filter(y_term == "best_response") %>%
+  trelliscope(
+    name = "Best Response",
+    panel_col = "perspective",
+    width = 1500
+  )
+
+# Register your own perspective.
 
 # arm role
 ps <- x %>%
-  perspective( endpoints ~ arm ) 
+  perspective( endpoints ~ baseline ) 
 
-ps <- x %>%
-  perspective( endpoints ~ arm )
- 
+ps %>%
+  filter(y_term == "Surv(os_days, os_censor)") %>%
+  trelliscope(
+    name = "OS Survival",
+    panel_col = "perspective",
+    width = 1000,
+    height = 1000
+  )
+
+ps <- ps %>% filter(y_term == "Surv(os_days, os_censor)")
+
+# Add two cognostics
+count_nas <- function(x, y_term, x_term) {
+  vars <- c(extract_var_names(y_term), extract_var_names(x_term))
+  xs <- x %>%
+    select(all_of(vars)) %>%
+    na.omit() 
+  nrow(x) - nrow(xs)
+}
+
+make_surv <- function(x, y_term, x_term) {
+  surv_fit(as.formula(paste(y_term, "~", x_term)), data = x)
+}
+
+ps$na_count <- pmap_int(
+  ps %>% select(y_term, x_term), 
+  function(y_term, x_term) {
+    partial(count_nas, x = x)(y_term, x_term)
+  }
+)
+
+ps$surv <- pmap(
+  ps %>% select(y_term, x_term), 
+  function(y_term, x_term) {
+    partial(make_surv, x = x)(y_term, x_term)
+  }
+)
+
+ps$p_val <- map_dbl(ps$surv, ~ surv_pvalue(.x, data = x)$pval)
+
+trelliscope(
+  ps %>% select(y_term, x_term, perspective, p_val, na_count),
+  name = "OS Survival",
+  panel_col = "perspective",
+  width = 1000,
+  height = 1000
+)
+
